@@ -1,13 +1,11 @@
-name: Update Version
+name: Froozeify's Auto Package version Updater (APU)
 description: >
-  Update the version field in config files (package.json, composer.json, and more)
-  when a GitHub release is published. Supports auto-detection, explicit file lists,
-  and custom regex rules for any file format.
+  Update version fields in configs on GitHub release. Supports auto-detection, file lists, and custom regex for any format.
 author: your-username
 
 branding:
-  icon: tag
-  color: blue
+  icon: package
+  color: orange
 
 inputs:
   version:
