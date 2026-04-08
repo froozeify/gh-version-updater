@@ -1,4 +1,4 @@
-name: Froozeify's Auto Package version Updater (APU)
+name: Froozeify's Version Updater (gVu)
 description: >
   Update version fields in configs on GitHub release. Supports auto-detection, file lists, and custom regex for any format.
 author: your-username
@@ -58,15 +58,15 @@ inputs:
   commit-author-name:
     description: >
       The git author name for the version-bump commit.
-      Defaults to "froozeify-update-version" so commits are clearly traceable to this action.
+      Defaults to "froozeify-gh-version-updater" so commits are clearly traceable to this action.
     required: false
-    default: froozeify-update-version
+    default: froozeify-gh-version-updater
 
   commit-author-email:
     description: >
       The git author email for the version-bump commit.
     required: false
-    default: froozeify-update-version[bot]@users.noreply.github.com
+    default: froozeify-gh-version-updater[bot]@users.noreply.github.com
 
   token:
     description: >

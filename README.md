@@ -1,8 +1,9 @@
-# Froozeify's update-version github action
+# Froozeify's GH Version Updater (gVu)
 
 A GitHub Action that updates the version field in your project's config files whenever a release is published.
 
-Supports `package.json`, `composer.json`, `pyproject.toml`, `Cargo.toml`, `pubspec.yaml`, and any custom file format via regex rules.
+Supports `package.json`, `composer.json`, `pyproject.toml`, `Cargo.toml`, `pubspec.yaml`, and any custom file format via
+regex rules.
 
 ---
 
@@ -11,7 +12,8 @@ Supports `package.json`, `composer.json`, `pyproject.toml`, `Cargo.toml`, `pubsp
 - **Auto-detection**
 - **Explicit file list**: pin exactly which files to update
 - **Custom regex rules**: extend support to any file format without changing the action
-- **Built-in commit**: optionally pushes the version bump back to your branch (enabled by default) or use any action to commit, like `stefanzweifel/git-auto-commit-action`
+- **Built-in commit**: optionally pushes the version bump back to your branch (enabled by default) or use any action to
+  commit, like `stefanzweifel/git-auto-commit-action`
 - **Configurable commit author**
 
 ---
@@ -21,7 +23,7 @@ Supports `package.json`, `composer.json`, `pyproject.toml`, `Cargo.toml`, `pubsp
 ```yaml
 on:
   release:
-    types: [published]
+    types: [ published ]
 
 permissions:
   contents: write # Require for the commit step
@@ -42,17 +44,17 @@ jobs:
 
 ## Inputs
 
-| Input                 | Required | Default                                                  | Description                                                                   |
-|-----------------------|----------|----------------------------------------------------------|-------------------------------------------------------------------------------|
-| `version`             | no       | `${{ github.ref_name }}`                                 | Version string. A leading `v` is stripped automatically (`v1.2.3` → `1.2.3`). |
-| `files`               | no       | `auto`                                                   | `auto` to detect known config files, or a comma-separated list of paths.      |
-| `custom-rules`        | no       | `""`                                                     | Extra update rules for unsupported file formats (see below).                  |
-| `commit`              | no       | `true`                                                   | Set to `false` to skip the commit step.                                       |
-| `commit-message`      | no       | `ci: Bump version to {version}`                          | Commit message. `{version}` is replaced with the clean version number.        |
-| `commit-branch`       | no       | `main`                                                   | Branch to push the commit to.                                                 |
-| `commit-author-name`  | no       | `froozeify-update-version`                               | Git author name for the commit.                                               |
-| `commit-author-email` | no       | `froozeify-update-version[bot]@users.noreply.github.com` | Git author email for the commit.                                              |
-| `token`               | no       | `${{ github.token }}`                                    | Token used to push the commit. Requires `contents: write`.                    |
+| Input                 | Required | Default                                                      | Description                                                                   |
+|-----------------------|----------|--------------------------------------------------------------|-------------------------------------------------------------------------------|
+| `version`             | no       | `${{ github.ref_name }}`                                     | Version string. A leading `v` is stripped automatically (`v1.2.3` → `1.2.3`). |
+| `files`               | no       | `auto`                                                       | `auto` to detect known config files, or a comma-separated list of paths.      |
+| `custom-rules`        | no       | `""`                                                         | Extra update rules for unsupported file formats (see below).                  |
+| `commit`              | no       | `true`                                                       | Set to `false` to skip the commit step.                                       |
+| `commit-message`      | no       | `ci: Bump version to {version}`                              | Commit message. `{version}` is replaced with the clean version number.        |
+| `commit-branch`       | no       | `main`                                                       | Branch to push the commit to.                                                 |
+| `commit-author-name`  | no       | `froozeify-gh-version-updater`                               | Git author name for the commit.                                               |
+| `commit-author-email` | no       | `froozeify-gh-version-updater[bot]@users.noreply.github.com` | Git author email for the commit.                                              |
+| `token`               | no       | `${{ github.token }}`                                        | Token used to push the commit. Requires `contents: write`.                    |
 
 ## Outputs
 
@@ -119,7 +121,7 @@ name: Release
 
 on:
   release:
-    types: [published]
+    types: [ published ]
 
 permissions:
   contents: write
