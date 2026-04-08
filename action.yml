@@ -1,0 +1,104 @@
+name: Update Version
+description: >
+  Update the version field in config files (package.json, composer.json, and more)
+  when a GitHub release is published. Supports auto-detection, explicit file lists,
+  and custom regex rules for any file format.
+author: your-username
+
+branding:
+  icon: tag
+  color: blue
+
+inputs:
+  version:
+    description: >
+      The version string to write. Defaults to the triggering tag name.
+      A leading 'v' prefix is automatically stripped (e.g. 'v1.2.3' → '1.2.3').
+    required: false
+    default: ${{ github.ref_name }}
+
+  files:
+    description: >
+      Comma-separated list of files to update, e.g. "package.json,composer.json".
+      Use "auto" (the default) to let the action detect known config files automatically.
+      Supported auto-detected files: package.json, composer.json, pyproject.toml,
+      Cargo.toml, pubspec.yaml.
+    required: false
+    default: auto
+
+  custom-rules:
+    description: >
+      Additional update rules for file formats not natively supported.
+      One rule per line, in the format:  file:search_regex:replacement_template
+      The placeholder {version} in the replacement is substituted with the clean version.
+      Example:
+        Chart.yaml:^version:\s*.*$:version: {version}
+        version.txt:^.*$:{version}
+    required: false
+    default: ''
+
+  commit:
+    description: >
+      Whether to commit and push the updated files back to the repository.
+      Set to "false" to skip the commit step (useful when you want to run
+      additional steps before committing, e.g. fetching a changelog).
+    required: false
+    default: 'true'
+
+  commit-message:
+    description: >
+      The commit message to use. The placeholder {version} is replaced with
+      the clean version number.
+    required: false
+    default: 'ci: Bump version to {version}'
+
+  commit-branch:
+    description: The branch to push the version-bump commit to.
+    required: false
+    default: main
+
+  commit-author-name:
+    description: >
+      The git author name for the version-bump commit.
+      Defaults to "froozeify-update-version" so commits are clearly traceable to this action.
+    required: false
+    default: froozeify-update-version
+
+  commit-author-email:
+    description: >
+      The git author email for the version-bump commit.
+    required: false
+    default: froozeify-update-version[bot]@users.noreply.github.com
+
+  token:
+    description: >
+      GitHub token used to push the commit. Needs 'contents: write' permission.
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  version:
+    description: The clean version number that was written (without 'v' prefix).
+    value: ${{ steps.run.outputs.version }}
+
+  files-updated:
+    description: Space-separated list of files that were actually modified.
+    value: ${{ steps.run.outputs.files-updated }}
+
+runs:
+  using: composite
+  steps:
+    - name: Update version in files
+      id: run
+      shell: bash
+      env:
+        INPUT_VERSION: ${{ inputs.version }}
+        INPUT_FILES: ${{ inputs.files }}
+        INPUT_CUSTOM_RULES: ${{ inputs.custom-rules }}
+        INPUT_COMMIT: ${{ inputs.commit }}
+        INPUT_COMMIT_MESSAGE: ${{ inputs.commit-message }}
+        INPUT_COMMIT_BRANCH: ${{ inputs.commit-branch }}
+        INPUT_COMMIT_AUTHOR_NAME: ${{ inputs.commit-author-name }}
+        INPUT_COMMIT_AUTHOR_EMAIL: ${{ inputs.commit-author-email }}
+        INPUT_TOKEN: ${{ inputs.token }}
+      run: bash "${{ github.action_path }}/update-version.sh"
