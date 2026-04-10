@@ -1,7 +1,7 @@
 name: Froozeify's Version Updater (gVu)
 description: >
   Update version fields in configs on GitHub release. Supports auto-detection, file lists, and custom regex for any format.
-author: your-username
+author: froozeify
 
 branding:
   icon: package
