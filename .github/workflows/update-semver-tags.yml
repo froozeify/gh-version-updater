@@ -1,0 +1,78 @@
+name: Update semver tags
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update-semver:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Update major and minor tags
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const tag = context.ref.replace('refs/tags/', '');
+            const version = tag.replace(/^v/, '');
+            const parts = version.split('.');
+
+            if (parts.length < 2 || parts.some(p => isNaN(p))) {
+              core.setFailed(`Tag "${tag}" is not a valid semver tag, skipping.`);
+              return;
+            }
+
+            const majorTag = `v${parts[0]}`;
+            const minorTag = `v${parts[0]}.${parts[1]}`;
+            const sha = context.sha;
+
+            const updated = [];
+            const created = [];
+
+            for (const shortTag of [majorTag, minorTag]) {
+              try {
+                // Check if the ref already exists
+                await github.rest.git.getRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: `tags/${shortTag}`,
+                });
+                // Exists, update it
+                await github.rest.git.updateRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: `tags/${shortTag}`,
+                  sha,
+                  force: true,
+                });
+                updated.push(shortTag);
+              } catch (e) {
+                if (e.status !== 404) throw e;
+                // Doesn't exist, create it
+                await github.rest.git.createRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: `refs/tags/${shortTag}`,
+                  sha,
+                });
+                created.push(shortTag);
+              }
+            }
+
+            const rows = [
+              ...created.map(t => `| \`${t}\` | created | \`${sha.slice(0, 7)}\` |`),
+              ...updated.map(t => `| \`${t}\` | updated | \`${sha.slice(0, 7)}\` |`),
+            ];
+
+            await core.summary
+              .addHeading(`Tags updated for ${tag}`)
+              .addTable([
+                [
+                  { data: 'Tag', header: true },
+                  { data: 'Action', header: true },
+                  { data: 'Commit', header: true },
+                ],
+                ...rows.map(r => r.replace(/^\| | \|$/g, '').split(' | ')),
+              ])
+              .write();
